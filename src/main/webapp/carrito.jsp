@@ -71,7 +71,7 @@
                         <td><%= producto.getNombre() %></td>
                         <td>S/ <%= producto.getPrecio() %></td>
                         <td>
-                            <form action="ActualizarCantidadServlet" method="post">
+                            <form action="/src/main/java/controlador/ActualizarCantidadServlet.java" method="post">
                                 <input type="hidden" name="id" value="<%= producto.getId() %>">
                                 <input type="number" name="cantidad" value="<%= producto.getCantidad() %>" min="1">
                                 <button type="submit">Actualizar</button>
@@ -79,7 +79,7 @@
                         </td>
                         <td>S/ <%= subtotal %></td>
                         <td>
-                            <form action="EliminarDelCarritoServlet" method="post">
+                            <form action="/src/main/java/controlador/EliminarDelCarritoServlet.java" method="post">
                                 <input type="hidden" name="id" value="<%= producto.getId() %>">
                                 <button type="submit">Eliminar</button>
                             </form>
@@ -93,7 +93,7 @@
         </div>
         <div class="acciones-carrito">
             <a href="productos.jsp" class="btn">Seguir Comprando</a>
-            <a href="FinalizarCompraServlet" class="btn">Finalizar Compra</a>
+            <a href="/src/main/java/controlador/FinalizarCompraServlet.java" class="btn">Finalizar Compra</a>
         </div>
     <%
         }
