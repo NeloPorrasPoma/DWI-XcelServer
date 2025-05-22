@@ -1,21 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+<web-app version="6.0" 
+         xmlns="https://jakarta.ee/xml/ns/jakartaee" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+
+    <!-- SERVLET: LOGIN -->
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
         <servlet-class>controlador.LoginServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>LogoutServlet</servlet-name>
-        <servlet-class>controlador.LogoutServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
     </servlet-mapping>
+
+    <!-- SERVLET: LOGOUT -->
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>controlador.LogoutServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/LogoutServlet</url-pattern>
     </servlet-mapping>
+
+    <!-- SERVLET: AGREGAR AL CARRITO -->
+    <servlet>
+        <servlet-name>AgregarAlCarritoServlet</servlet-name>
+        <servlet-class>controlador.AgregarAlCarritoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AgregarAlCarritoServlet</servlet-name>
+        <url-pattern>/AgregarAlCarritoServlet</url-pattern>
+    </servlet-mapping>
+
+    <!-- SERVLET: ELIMINAR DEL CARRITO -->
+    <servlet>
+        <servlet-name>EliminarDelCarritoServlet</servlet-name>
+        <servlet-class>controlador.EliminarDelCarritoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>EliminarDelCarritoServlet</servlet-name>
+        <url-pattern>/EliminarDelCarritoServlet</url-pattern>
+    </servlet-mapping>
+
+    <!-- SERVLET: ACTUALIZAR CANTIDAD -->
+    <servlet>
+        <servlet-name>ActualizarCantidadServlet</servlet-name>
+        <servlet-class>controlador.ActualizarCantidadServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ActualizarCantidadServlet</servlet-name>
+        <url-pattern>/ActualizarCantidadServlet</url-pattern>
+    </servlet-mapping>
+
+    <!-- SERVLET: FINALIZAR COMPRA -->
+    <servlet>
+        <servlet-name>FinalizarCompraServlet</servlet-name>
+        <servlet-class>controlador.FinalizarCompraServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FinalizarCompraServlet</servlet-name>
+        <url-pattern>/FinalizarCompraServlet</url-pattern>
+    </servlet-mapping>
+
+    <!-- CONFIGURACIÓN DE SESIÓN -->
     <session-config>
         <session-timeout>
             30
