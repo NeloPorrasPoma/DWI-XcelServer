@@ -25,15 +25,6 @@ public class ActualizarCantidadServlet extends HttpServlet {
         @SuppressWarnings("unchecked")
         List<Producto> carrito = (List<Producto>) session.getAttribute("carrito");
 
-        if (carrito != null) {
-            for (Producto producto : carrito) {
-                if (producto.getId() == idActualizar) {
-                    producto.setCantidad(nuevaCantidad);
-                    break;
-                }
-            }
-        }
-
         session.setAttribute("carrito", carrito);
         response.sendRedirect("carrito.jsp");
     }
