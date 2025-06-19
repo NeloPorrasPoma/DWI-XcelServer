@@ -1,0 +1,257 @@
+--
+-- db.js (conexión a MySQL)
+--
+
+
+---------------------------------------------------
+
+
+import mysql from 'mysql2/promise';
+
+export const db = await mysql.createPool({
+  host: 'localhost',
+  user: 'tu_usuario',
+  password: 'tu_contraseña',
+  database: 'tu_base_de_datos'
+});
+
+------------------------------------------------
+
+
+--
+-- models/User.js
+--
+
+
+export class User {
+  constructor(id, nombre, email, rol) {
+    this.id = id;
+    this.nombre = nombre;
+    this.email = email;
+    this.rol = rol;
+  }
+}
+
+---------------------------------------------------
+
+
+--
+-- dao/UserDAO.js
+--
+
+import { db } from '../db.js';
+
+export class UserDAO {
+  async getAll() {
+    const [rows] = await db.query('SELECT * FROM usuarios');
+    return rows;
+  }
+
+  async getById(id) {
+    const [rows] = await db.query('SELECT * FROM usuarios WHERE id = ?', [id]);
+    return rows[0];
+  }
+
+  async create(nombre, email, rol) {
+    const [result] = await db.query(
+      'INSERT INTO usuarios (nombre, email, rol) VALUES (?, ?, ?)',
+      [nombre, email, rol]
+    );
+    return { id: result.insertId, nombre, email, rol };
+  }
+
+  async update(id, nombre, email, rol) {
+    await db.query(
+      'UPDATE usuarios SET nombre = ?, email = ?, rol = ? WHERE id = ?',
+      [nombre, email, rol, id]
+    );
+    return { id, nombre, email, rol };
+  }
+
+  async delete(id) {
+    await db.query('DELETE FROM usuarios WHERE id = ?', [id]);
+  }
+}
+
+
+------------------------------------------------------------------------
+
+
+--
+-- controllers/UserController.js
+--
+
+
+import { UserDAO } from '../dao/UserDAO.js';
+
+const dao = new UserDAO();
+
+export const getAllUsers = async (req, res) => {
+  const users = await dao.getAll();
+  res.json(users);
+};
+
+export const getUserById = async (req, res) => {
+  const user = await dao.getById(req.params.id);
+  res.json(user);
+};
+
+export const createUser = async (req, res) => {
+  const { nombre, email, rol } = req.body;
+  const newUser = await dao.create(nombre, email, rol);
+  res.status(201).json(newUser);
+};
+
+export const updateUser = async (req, res) => {
+  const { id } = req.params;
+  const { nombre, email, rol } = req.body;
+  const updatedUser = await dao.update(id, nombre, email, rol);
+  res.json(updatedUser);
+};
+
+export const deleteUser = async (req, res) => {
+  await dao.delete(req.params.id);
+  res.sendStatus(204);
+};
+
+
+----------------------------------------------------------
+
+--
+-- routes/userRoutes.js
+--
+
+
+import express from 'express';
+import {
+  getAllUsers, getUserById, createUser, updateUser, deleteUser
+} from '../controllers/UserController.js';
+
+const router = express.Router();
+
+router.get('/', getAllUsers);
+router.get('/:id', getUserById);
+router.post('/', createUser);
+router.put('/:id', updateUser);
+router.delete('/:id', deleteUser);
+
+export default router;
+
+----------------------------------------------------------------------
+
+--
+-- server.js
+--
+
+
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import userRoutes from './routes/userRoutes.js';
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+
+app.use('/api/usuarios', userRoutes);
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});
+
+
+---------------------------------------------------------------------
+
+--
+-- FRONTEND (frontend/index.html)
+--
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Usuarios</title>
+  <script>
+    async function cargarUsuarios() {
+      const res = await fetch('http://localhost:3000/api/usuarios');
+      const usuarios = await res.json();
+      const tbody = document.getElementById('userTable');
+      tbody.innerHTML = '';
+      usuarios.forEach(u => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${u.id}</td>
+            <td>${u.nombre}</td>
+            <td>${u.email}</td>
+            <td>${u.rol}</td>
+            <td>
+              <button onclick="eliminar(${u.id})">Eliminar</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    async function crearUsuario() {
+      const nombre = document.getElementById('nombre').value;
+      const email = document.getElementById('email').value;
+      const rol = document.getElementById('rol').value;
+
+      await fetch('http://localhost:3000/api/usuarios', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ nombre, email, rol })
+      });
+
+      document.getElementById('userForm').reset();
+      cargarUsuarios();
+    }
+
+    async function eliminar(id) {
+      await fetch(`http://localhost:3000/api/usuarios/${id}`, {
+        method: 'DELETE'
+      });
+      cargarUsuarios();
+    }
+
+    window.onload = cargarUsuarios;
+  </script>
+</head>
+<body>
+  <h1>Gestión de Usuarios</h1>
+
+  <form id="userForm" onsubmit="event.preventDefault(); crearUsuario();">
+    <input id="nombre" placeholder="Nombre" required>
+    <input id="email" type="email" placeholder="Email" required>
+    <select id="rol">
+      <option value="admin">Administrador</option>
+      <option value="cliente">Cliente</option>
+    </select>
+    <button type="submit">Agregar</button>
+  </form>
+
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="userTable"></tbody>
+  </table>
+</body>
+</html>
+
+---------------------------------------------------------------------------------
+
+--
+--  Base de Datos MySQL
+--
+
+CREATE TABLE usuarios (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(100),
+  email VARCHAR(100),
+  rol VARCHAR(20)
+);
