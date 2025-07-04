@@ -1,0 +1,37 @@
+package controlador;
+
+import dao.UsuarioDAO;
+import modelo.Usuario;
+import vista.UsuarioView;
+
+import java.util.List;
+
+public class UsuarioController {
+    private UsuarioDAO dao;
+    private UsuarioView vista;
+
+    public UsuarioController(UsuarioDAO dao, UsuarioView vista) {
+        this.dao = dao;
+        this.vista = vista;
+    }
+
+    public void crear(String usuario, String contraseña, int rolId) {
+        dao.crear(new Usuario(0, usuario, contraseña, rolId));
+        vista.mostrarMensaje("Usuario creado correctamente.");
+    }
+
+    public void listar() {
+        List<Usuario> usuarios = dao.listar();
+        vista.mostrarUsuarios(usuarios);
+    }
+
+    public void actualizar(int id, String usuario, String contraseña, int rolId) {
+        dao.actualizar(new Usuario(id, usuario, contraseña, rolId));
+        vista.mostrarMensaje("Usuario actualizado correctamente.");
+    }
+
+    public void eliminar(int id) {
+        dao.eliminar(id);
+        vista.mostrarMensaje("Usuario eliminado correctamente.");
+    }
+}
