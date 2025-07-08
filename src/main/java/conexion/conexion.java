@@ -1,24 +1,26 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package conexion;
+package util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class conexion {
-    private static final String URL = "jdbc:mysql://localhost:3306/xcel_server";
-    private static final String USER = "root";
-    private static final String PASSWORD = "";
 
-    public static Connection conectar() throws SQLException {
+    public static Connection getConnection() {
+        Connection con = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            return DriverManager.getConnection(URL, USER, PASSWORD);
-        } catch (ClassNotFoundException e) {
-            throw new SQLException("Error al cargar el driver de MySQL", e);
+            Class.forName("com.mysql.cj.jdbc.Driver"); // Asegúrate que tienes este driver
+            con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/xcel_server", // Cambia si tu puerto o BD es distinta
+                "root", // Tu usuario de MySQL
+                ""      // Tu contraseña si tiene
+            );
+        } catch (ClassNotFoundException | SQLException e) {
         }
+        return con;
+    }
+
+    public static Connection conectar() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
