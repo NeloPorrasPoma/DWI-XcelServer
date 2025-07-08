@@ -12,41 +12,43 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import modelo.Producto;
+import modelo.ProductoDAO;
 
 @WebServlet("/AgregarAlCarritoServlet")
 public class AgregarAlCarritoServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
 
         int id = Integer.parseInt(request.getParameter("id"));
-        String nombre = request.getParameter("nombre");
-        double precio = Double.parseDouble(request.getParameter("precio"));
         int cantidad = Integer.parseInt(request.getParameter("cantidad"));
 
-        HttpSession session = request.getSession();
-        @SuppressWarnings("unchecked")
-        List<Producto> carrito = (List<Producto>) session.getAttribute("carrito");
+        ProductoDAO dao = new ProductoDAO();
+        Producto producto = dao.obtenerPorId(id);
 
-        if (carrito == null) {
-            carrito = new ArrayList<>();
-        }
+        if (producto != null) {
+            producto.setCantidad(cantidad);
 
-        boolean existe = false;
-        for (Producto p : carrito) {
-            if (p.getId() == id) {
-                p.setCantidad(p.getCantidad() + cantidad);
-                existe = true;
-                break;
+            HttpSession session = request.getSession();
+            List<Producto> carrito = (List<Producto>) session.getAttribute("carrito");
+            if (carrito == null) carrito = new ArrayList<>();
+
+            boolean existe = false;
+            for (Producto p : carrito) {
+                if (p.getId() == producto.getId()) {
+                    p.setCantidad(p.getCantidad() + cantidad);
+                    existe = true;
+                    break;
+                }
             }
+
+            if (!existe) {
+                carrito.add(producto);
+            }
+
+            session.setAttribute("carrito", carrito);
         }
 
-        if (!existe) {
-            Producto producto = new Producto(id, nombre, precio, cantidad);
-            carrito.add(producto);
-        }
-
-        session.setAttribute("carrito", carrito);
         response.sendRedirect("carrito.jsp");
     }
 }
